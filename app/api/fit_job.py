@@ -21,6 +21,7 @@ from .config import SETTINGS
 
 SAFE_FRACTION = 0.7  # suggested swipes stay under this share of the sensor range
 MOVED_RATIO = 3.0  # misfit per reading this many times the last fit's: magnet may have moved
+MIN_SWIPES_TO_COMPARE = 3
 HIGH_RESIDUAL = 4.0  # misfit per reading above this with good coverage: other iron or magnets
 
 
@@ -29,6 +30,7 @@ class FitState:
     """What a session keeps between fits."""
 
     misfit: float | None = None  # chi² per data point of the last fit
+    swipes: int = 0  # how many swipes the last fit used
     history: list[float] = field(default_factory=list)
 
 
@@ -57,13 +59,22 @@ def run_fit(swipes: list[Swipe], state: FitState) -> dict:
     misfit = sol.chi2 / max(sol.n_data, 1)
 
     warnings = []
-    if state.misfit is not None and misfit > MOVED_RATIO * state.misfit:
-        warnings.append("magnet_may_have_moved")  # PR-19
+    # PR-19: a jump in misfit when one or two swipes are added to a fit that already had a
+    # few. Fits from one or two swipes match their own data too easily to compare against.
+    added = len(swipes) - state.swipes
+    if (
+        state.misfit is not None
+        and state.swipes >= MIN_SWIPES_TO_COMPARE
+        and 0 < added <= 2
+        and misfit > MOVED_RATIO * state.misfit
+    ):
+        warnings.append("magnet_may_have_moved")
     if len(swipes) >= 4 and misfit > HIGH_RESIDUAL:
         warnings.append("high_residual")  # PR-18
     if any(r.saturated for r in reports):
         warnings.append("saturated_readings_dropped")
     state.misfit = misfit
+    state.swipes = len(swipes)
     state.history.append(misfit)
 
     cal = swipes[-1].calibration

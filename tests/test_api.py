@@ -105,16 +105,41 @@ def test_full_queue_answers_429_with_retry_after(monkeypatch):
 
     monkeypatch.setattr(store_mod, "run_fit", slow)
     s = store_mod.Store(dataclasses.replace(SETTINGS, queue_size=1))
-    sess = s.create("test")
+    a, b, c = s.create("a"), s.create("b"), s.create("c")
     sw = parse_swipe(disc_session(n_lines=1)[2][0])
-    s.add_swipe(sess, sw)  # taken by the worker
+    s.add_swipe(a, sw)  # taken by the worker
     time.sleep(0.1)
-    s.add_swipe(sess, sw)  # waits in the queue
+    s.add_swipe(b, sw)  # waits in the queue
     with pytest.raises(store_mod.QueueFull) as e:
-        s.add_swipe(sess, sw)
+        s.add_swipe(c, sw)
     assert e.value.retry_after_s >= 1
-    assert len(sess.swipes) == 2  # the refused swipe is not kept
+    assert len(c.swipes) == 0  # the refused swipe is not kept
     gate.set()
+
+
+def test_a_burst_of_swipes_shares_one_waiting_refit(monkeypatch):
+    gate = threading.Event()
+    seen = []
+
+    def slow(swipes, state):
+        gate.wait(5)
+        seen.append(len(swipes))
+        return {"ok": True}
+
+    monkeypatch.setattr(store_mod, "run_fit", slow)
+    s = store_mod.Store(dataclasses.replace(SETTINGS, queue_size=1))
+    sess = s.create("t")
+    sw = parse_swipe(disc_session(n_lines=1)[2][0])
+    first = s.add_swipe(sess, sw)  # running
+    time.sleep(0.1)
+    jobs = [s.add_swipe(sess, sw) for _ in range(4)]  # all join one waiting refit
+    assert len({j.id for j in jobs}) == 1 and jobs[0].id != first.id
+    assert jobs[-1].swipes == 5
+    gate.set()
+    t0 = time.time()
+    while s.job(jobs[0].id).status != "done" and time.time() - t0 < 5:
+        time.sleep(0.02)
+    assert seen == [1, 5]
 
 
 def test_idle_sessions_are_forgotten():
@@ -122,3 +147,29 @@ def test_idle_sessions_are_forgotten():
     sess = s.create("test")
     time.sleep(0.01)
     assert s.get(sess.id) is None
+
+
+def test_moved_magnet_is_flagged_and_steady_scans_are_not():
+    from app.api.fit_job import FitState, run_fit
+
+    m, _, files = disc_session()
+    swipes = [parse_swipe(f) for f in files]
+    state = FitState()
+    for k in (1, 3, 4, 5):  # uploads arriving one by one and in bursts
+        out = run_fit(swipes[:k], state)
+        assert "magnet_may_have_moved" not in out["warnings"], k
+    # The magnet slides 3 cm before the last swipe.
+    moved = swipe_file(
+        m.__class__(m.name, m.sources.copy().move((0.03, 0, 0)), m.radius, m.top),
+        *disc_lines_last(files),
+        5,
+        NOISE["realistic"],
+        np.random.default_rng(9),
+    )
+    out = run_fit(swipes[:5] + [parse_swipe(moved)], state)
+    assert "magnet_may_have_moved" in out["warnings"]
+
+
+def disc_lines_last(files):
+    line = files[-1]["planned_line"]
+    return line["start_m"], line["end_m"]

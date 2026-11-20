@@ -38,6 +38,7 @@ class Session:
     fit: FitState = field(default_factory=FitState)
     result: dict | None = None
     result_swipes: int = 0
+    queued_job: str | None = None  # a refit still waiting; new swipes join it
 
 
 @dataclass
@@ -103,9 +104,16 @@ class Store:
 
     # ---- jobs
     def add_swipe(self, s: Session, swipe: Swipe) -> Job:
-        """Store the swipe and queue a refit of the whole session."""
+        """Store the swipe and queue a refit of the whole session. If a refit of this session
+        is still waiting, the swipe joins it instead: a burst of uploads (a backlog after being
+        offline) costs one fit, not one per swipe, and cannot fill the queue."""
         with self.lock:
             s.swipes.append(swipe)
+            waiting = self.jobs.get(s.queued_job) if s.queued_job else None
+            if waiting and waiting.status == "queued":
+                waiting.swipes = len(s.swipes)
+                log.info("session %s: swipe %d joins job %s", s.id, len(s.swipes), waiting.id)
+                return waiting
             job = Job(id=secrets.token_urlsafe(12), session_id=s.id, swipes=len(s.swipes))
             try:
                 self.queue.put_nowait(job.id)
@@ -114,6 +122,7 @@ class Store:
                 wait = int((self.queue.qsize() + 1) * self.fit_seconds) + 1
                 raise QueueFull(wait) from None
             self.jobs[job.id] = job
+            s.queued_job = job.id
         log.info("session %s: swipe %d queued as job %s", s.id, len(s.swipes), job.id)
         return job
 
@@ -130,6 +139,8 @@ class Store:
                 swipes = list(sess.swipes[: job.swipes]) if sess else None
                 if job:
                     job.status = "running"
+                    if sess and sess.queued_job == job.id:
+                        sess.queued_job = None
             if not job or sess is None:
                 if job:
                     job.status, job.error, job.finished = (
