@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from app.pipeline.align import session_baseline, swipe_observations
+from app.pipeline.clean import clean_swipe
 from app.pipeline.fit import fit_session
 from app.pipeline.observations import Observations
 from app.pipeline.reconstruct import reconstruct
@@ -41,8 +42,11 @@ def _r(a: np.ndarray, nd: int = 5) -> list:
 def run_fit(swipes: list[Swipe], state: FitState) -> dict:
     t0 = time.perf_counter()
     base, drift = session_baseline(swipes)
+    cleaned_swipes: list[Swipe] = []
+    for s in swipes:
+        cleaned_swipes.extend(clean_swipe(s, base))
     parts, reports = [], []
-    for i, s in enumerate(swipes):
+    for i, s in enumerate(cleaned_swipes):
         o, rep = swipe_observations(s, base, i, drift)
         parts.append(o)
         reports.append(rep)
