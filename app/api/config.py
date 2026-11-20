@@ -18,7 +18,9 @@ def _int(name: str, default: int) -> int:
 
 @dataclass(frozen=True)
 class Settings:
-    queue_size: int = _int("QUEUE_SIZE", 4)  # waiting fits; one more gets HTTP 429
+    # Waiting fits. A session has at most one waiting (new swipes join it), so this is how many
+    # phones can scan at once before HTTP 429.
+    queue_size: int = _int("QUEUE_SIZE", 12)
     session_idle_s: int = _int("SESSION_IDLE_S", 30 * 60)  # PR-12: forget idle sessions
     max_swipes: int = _int("MAX_SWIPES", 40)  # per session
     max_samples: int = _int("MAX_SAMPLES", 30_000)  # magnetometer rows per swipe
