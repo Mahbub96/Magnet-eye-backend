@@ -48,6 +48,10 @@ class Posterior:
     lam: float
     col_scale: np.ndarray  # (n,)
     s2: float  # variance inflation when the fit is worse than the noise model predicts
+    # Unpenalised uniform magnetisation: y = T z with T = I + (kappa - 1) u0 u0^T, so the
+    # solved z has the plain Tikhonov posterior above and the uniform mode is barely penalised.
+    u0: np.ndarray | None = None  # (n, 3) orthonormal, in y space
+    kappa: float = 1.0
 
 
 @dataclass
@@ -81,6 +85,8 @@ class Solution:
         """Posterior variance of op @ m.ravel() for each row of op."""
         p = self.posterior
         f = op * p.col_scale[None, :]
+        if p.u0 is not None:
+            f = f + (p.kappa - 1.0) * (f @ p.u0) @ p.u0.T
         fv = f @ p.v
         in_range = np.sum(fv**2 / (p.s**2 + p.lam)[None, :], axis=1)
         null = (np.sum(f**2, axis=1) - np.sum(fv**2, axis=1)) / p.lam
@@ -197,6 +203,20 @@ def _tikhonov(a, d, n_eff, rule, lam=None):
     return y, s, vt.T, lam, used, sig2
 
 
+# Penalty on the uniform-magnetisation mode relative to the rest: 1 / KAPPA^2 (effectively 0).
+KAPPA = 1e3
+
+
+def _uniform_basis(wcol: np.ndarray) -> np.ndarray:
+    """Orthonormal (n, 3) basis, in the depth-weighted y space (y = wcol * m), of uniform
+    magnetisation: the same moment vector in every voxel."""
+    n = wcol.size
+    u = np.zeros((n, 3))
+    for c in range(3):
+        u[c::3, c] = wcol[c::3]
+    return u / np.linalg.norm(u, axis=0, keepdims=True)
+
+
 def solve(
     obs: Observations,
     sigma: np.ndarray,
@@ -205,16 +225,30 @@ def solve(
     lam_rule: str = "gcv",
     irls_iters: int = 12,
     bias: list[SwipeBias] | None = None,
+    free_uniform: bool = True,
 ) -> Solution:
     """Solve for voxel moments. With `bias` (per-swipe offsets including a field offset) the
     background is part of the correlated noise; without it a free uniform background is fitted.
+
+    free_uniform (Tikhonov only): do not penalise uniform magnetisation of the grid, only the
+    departure from it. The smallest-norm penalty otherwise shrinks the total moment of an
+    elongated magnet (bar: 12-20 % low); the total moment is well constrained by the data, so
+    it needs no penalty.
     """
     free_bg = bias is None
     gw, gbw, dw, gp, dp, wcol = _weighted_system(obs, sigma, grid, bias, free_bg)
     n_eff = 3 * len(obs) - (3 if free_bg else 0)
     a = gp / wcol[None, :]
 
+    u0 = None
+    kappa = 1.0
+    if free_uniform and method == "tikhonov":
+        u0, kappa = _uniform_basis(wcol), KAPPA
+        a = a + (kappa - 1.0) * (a @ u0) @ u0.T  # a @ T
+
     y, s, v, lam, used, sig2 = _tikhonov(a, dp, n_eff, lam_rule)
+    if u0 is not None:
+        y = y + (kappa - 1.0) * u0 @ (u0.T @ y)  # y = T z
     col_scale = 1.0 / wcol
 
     if method == "sparse":
@@ -259,5 +293,5 @@ def solve(
         lam_rule=used,
         chi2=chi2,
         n_data=n_eff,
-        posterior=Posterior(v=v, s=s, lam=lam, col_scale=col_scale, s2=s2),
+        posterior=Posterior(v=v, s=s, lam=lam, col_scale=col_scale, s2=s2, u0=u0, kappa=kappa),
     )

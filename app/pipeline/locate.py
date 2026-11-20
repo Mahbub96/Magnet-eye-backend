@@ -70,6 +70,11 @@ def fit_dipole(obs: Observations, sigma: np.ndarray | None = None) -> DipoleFit:
     return DipoleFit(pos=p, moment=x[:3], background=x[3:], chi2_per_dof=cost / dof)
 
 
+# Height of the voxel grid above the dipole depth when the table plane is known, in standoffs.
+# Chosen on Phase 1 seeds 0-2 and checked on fresh seeds 3-8 (docs/phase1-results.md).
+TABLE_TOP_K = 0.4
+
+
 def size_grid(
     obs: Observations, fit: DipoleFit, max_voxels: int, table_z: float | None = None
 ) -> VoxelGrid:
@@ -82,7 +87,10 @@ def size_grid(
     - Vertical extent: never above the lowest reading. If the table plane is known (ARCore
       plane, or the paper in ruler/grid mode) the grid starts on it, because the magnet cannot
       be below the table; this removes most of the depth-versus-strength ambiguity. Without
-      it, the grid spans the dipole depth +- 0.6 standoff.
+      it, the grid spans the dipole depth +- 0.6 standoff. On a table the top is the dipole
+      depth + TABLE_TOP_K standoffs: voxels higher than the magnet let the smallest-norm
+      solution put moment closer to the phone, where less of it explains the same field, so
+      the total moment comes out low (bar: 12-20 % with 0.6).
     """
     rel = obs.pos - fit.pos
     standoff = float(np.min(np.linalg.norm(rel, axis=1)))
@@ -98,7 +106,10 @@ def size_grid(
             z_top = min(fit.pos[2] + 0.6 * standoff, z_low_sample - 0.5 * size)
         else:
             z_bot = table_z
-            z_top = min(max(fit.pos[2] + 0.6 * standoff, table_z + size), z_low_sample - 0.5 * size)
+            z_top = min(
+                max(fit.pos[2] + TABLE_TOP_K * standoff, table_z + size),
+                z_low_sample - 0.5 * size,
+            )
         nz = max(int(round((z_top - z_bot) / size)), 1)
         if nx * ny * nz <= max_voxels:
             break

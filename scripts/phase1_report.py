@@ -115,7 +115,13 @@ def write_markdown(rows, seeds):
             f"{r['sec']:.2f} | {r['pass']} |"
         )
     path = pathlib.Path(__file__).resolve().parents[1] / "docs" / "phase1-results.md"
-    path.write_text("\n".join(out) + "\n")
+    # Keep the hand-written findings below the table.
+    notes = ""
+    if path.exists():
+        old = path.read_text()
+        if "\n## Findings" in old:
+            notes = "\n" + old[old.index("\n## Findings") + 1 :]
+    path.write_text("\n".join(out) + "\n" + notes)
     print(f"wrote {path}")
 
 

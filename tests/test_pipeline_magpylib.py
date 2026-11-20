@@ -8,6 +8,8 @@ fast and deterministic.
 import numpy as np
 import pytest
 
+from app.pipeline.dipole import dipole_kernel
+from app.pipeline.uncertainty import posterior_covariance
 from app.sim import magnets
 from app.sim.phone import NOISE
 from app.sim.session import SAFE_FRACTION, run_session
@@ -42,21 +44,7 @@ def test_fit_is_fast(results, name):
     assert max(s.fit_seconds for s in results[name].history) <= SECONDS
 
 
-@pytest.mark.parametrize(
-    "name",
-    [
-        "ring",
-        "disc",
-        pytest.param(
-            "bar",
-            marks=pytest.mark.xfail(
-                reason="open Phase 1 item: Tikhonov shrinks the total moment of an elongated "
-                "magnet by ~15-20 %; see docs/phase1-results.md",
-                strict=False,
-            ),
-        ),
-    ],
-)
+@pytest.mark.parametrize("name", ["ring", "bar", "disc"])
 def test_moment_error(results, name):
     assert results[name].history[-1].moment_err <= MOMENT_ERR
 
@@ -82,3 +70,13 @@ def test_suggested_swipes_avoid_saturation():
     worst = np.abs(mag.field_ut(r.fit.binned.pos[guided])).max()
     assert worst < phone.range_ut
     assert worst < 1.2 * SAFE_FRACTION * phone.range_ut
+
+
+def test_posterior_paths_agree(results):
+    """The full covariance (guided swipes) and the per-row variance (error bars) describe the
+    same posterior, including the unpenalised uniform-magnetisation mode."""
+    sol = results["bar"].fit.solution
+    pts = sol.grid.centers[:5] + np.array([0.0, 0.0, 0.03])
+    op = dipole_kernel(pts, sol.grid.centers)
+    full = np.einsum("ij,jk,ik->i", op, posterior_covariance(sol), op)
+    np.testing.assert_allclose(full, sol.linear_variance(op), rtol=1e-6)

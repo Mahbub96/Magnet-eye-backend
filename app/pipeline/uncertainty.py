@@ -28,6 +28,9 @@ def posterior_covariance(sol: Solution) -> np.ndarray:
     n = p.col_scale.size
     vv = (p.v / (p.s**2 + p.lam)) @ p.v.T
     c = vv + (np.eye(n) - p.v @ p.v.T) / p.lam
+    if p.u0 is not None:  # y = T z with T = I + (kappa - 1) u0 u0^T
+        t = np.eye(n) + (p.kappa - 1.0) * p.u0 @ p.u0.T
+        c = t @ c @ t.T
     return p.s2 * (p.col_scale[:, None] * c * p.col_scale[None, :])
 
 

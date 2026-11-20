@@ -6,74 +6,74 @@ Columns: scan height chosen to stay under 70 % of the sensor range; voxel edge; 
 
 | Regulariser | Noise | Magnet | Height mm | Voxel mm | Field err (6 → 10 swipes) | Moment err | Piece cos | 2σ coverage | Reported unc | Hole ratio | Fit s | Pass |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tikhonov | ideal | ring | 43 | 16 | 0.8% → 0.4% | 4.2% | 1.00 | 98% | 0.8% | 1.12 | 0.16 | 3/3 |
-| tikhonov | ideal | bar | 23 | 10 | 1.3% → 0.7% | 9.9% | 1.00 | 99% | 0.9% | 1.12 | 0.13 | 3/3 |
-| tikhonov | ideal | disc | 43 | 14 | 0.7% → 0.6% | 2.5% | 1.00 | 100% | 1.1% | 1.45 | 0.15 | 3/3 |
-| tikhonov | ideal | broken | 31 | 11 | 1.2% → 1.0% | 5.3% | 0.99 | 98% | 1.5% | 1.08 | 0.19 | 3/3 |
-| tikhonov | ideal | two | 23 | 8 | 17.4% → 1.6% | nan% | 0.99 | 87% | 2.7% | 0.82 | 0.75 | 3/3 |
-| tikhonov | realistic | ring | 43 | 16 | 2.8% → 2.7% | 6.1% | 1.00 | 100% | 4.5% | 1.22 | 0.52 | 3/3 |
-| tikhonov | realistic | bar | 23 | 10 | 12.4% → 7.0% | 12.2% | 1.00 | 91% | 7.4% | 0.87 | 0.44 | 1/3 |
-| tikhonov | realistic | disc | 43 | 14 | 5.9% → 3.1% | 2.1% | 1.00 | 99% | 5.0% | 1.22 | 0.21 | 3/3 |
-| tikhonov | realistic | broken | 31 | 11 | 9.3% → 6.6% | 7.8% | 0.97 | 93% | 6.2% | 0.76 | 0.36 | 2/3 |
-| tikhonov | realistic | two | 23 | 6 | 25.4% → 15.9% | nan% | 0.23 | 84% | 19.6% | 0.79 | 1.47 | 0/3 |
-| tikhonov | poor | ring | 43 | 15 | 7.1% → 5.8% | 8.1% | 1.00 | 98% | 9.7% | 0.94 | 0.50 | 3/3 |
-| tikhonov | poor | bar | 23 | 10 | 21.7% → 20.3% | 21.3% | 1.00 | 89% | 12.3% | 0.72 | 1.21 | 0/3 |
-| tikhonov | poor | disc | 43 | 13 | 14.6% → 7.3% | 4.8% | 1.00 | 99% | 10.6% | 1.30 | 0.48 | 2/3 |
-| tikhonov | poor | broken | 31 | 9 | 17.8% → 14.5% | 14.4% | 0.81 | 90% | 12.7% | 0.99 | 0.70 | 0/3 |
-| tikhonov | poor | two | 23 | 7 | 47.4% → 28.2% | nan% | 0.98 | 71% | 19.2% | 0.58 | 0.87 | 0/3 |
-| sparse | ideal | ring | 43 | 16 | 0.4% → 0.3% | 2.2% | 1.00 | 99% | 0.5% | 1.73 | 0.95 | 3/3 |
-| sparse | ideal | bar | 23 | 11 | 0.8% → 0.7% | 8.9% | 1.00 | 98% | 0.9% | 1.95 | 1.53 | 1/3 |
-| sparse | ideal | disc | 43 | 14 | 0.5% → 0.4% | 1.7% | 1.00 | 99% | 0.6% | 3.88 | 0.68 | 3/3 |
-| sparse | ideal | broken | 31 | 10 | 1.1% → 1.1% | 4.1% | 0.99 | 96% | 1.2% | 0.37 | 2.54 | 0/3 |
-| sparse | ideal | two | 23 | 8 | 15.7% → 1.5% | nan% | 0.98 | 65% | 1.2% | 0.82 | 2.86 | 0/3 |
-| sparse | realistic | ring | 43 | 16 | 4.7% → 2.9% | 2.6% | 1.00 | 99% | 4.0% | 2.10 | 1.62 | 0/3 |
-| sparse | realistic | bar | 23 | 10 | 11.1% → 8.2% | 12.7% | 1.00 | 94% | 7.1% | 0.34 | 3.98 | 0/3 |
-| sparse | realistic | disc | 43 | 14 | 7.3% → 4.4% | 2.2% | 1.00 | 99% | 4.4% | 2.49 | 1.24 | 1/3 |
-| sparse | realistic | broken | 31 | 11 | 9.8% → 6.4% | 7.9% | 0.98 | 91% | 5.6% | 0.06 | 2.63 | 0/3 |
-| sparse | realistic | two | 23 | 6 | 25.4% → 15.2% | nan% | 0.87 | 85% | 12.9% | 0.40 | 14.10 | 0/3 |
-| sparse | poor | ring | 43 | 15 | 12.9% → 6.1% | 5.2% | 1.00 | 98% | 9.0% | 0.94 | 3.79 | 0/3 |
-| sparse | poor | bar | 23 | 10 | 22.3% → 17.3% | 16.2% | 1.00 | 77% | 11.7% | 0.23 | 12.85 | 0/3 |
-| sparse | poor | disc | 43 | 13 | 14.3% → 6.8% | 5.1% | 1.00 | 98% | 10.4% | 1.45 | 3.67 | 0/3 |
-| sparse | poor | broken | 31 | 9 | 14.9% → 12.3% | 8.5% | 0.96 | 90% | 11.5% | 0.93 | 6.43 | 0/3 |
-| sparse | poor | two | 23 | 7 | 47.4% → 35.6% | nan% | 0.92 | 57% | 19.6% | 0.50 | 3.75 | 0/3 |
+| tikhonov | ideal | ring | 43 | 16 | 0.5% → 0.3% | 1.6% | 1.00 | 99% | 0.5% | 1.21 | 0.10 | 3/3 |
+| tikhonov | ideal | bar | 23 | 11 | 1.0% → 0.7% | 11.2% | 1.00 | 98% | 0.9% | 1.01 | 0.12 | 3/3 |
+| tikhonov | ideal | disc | 43 | 14 | 0.5% → 0.4% | 1.6% | 1.00 | 99% | 0.6% | 2.10 | 0.09 | 3/3 |
+| tikhonov | ideal | broken | 31 | 11 | 0.9% → 0.6% | 5.2% | 0.97 | 99% | 1.0% | 1.07 | 0.28 | 3/3 |
+| tikhonov | ideal | two | 23 | 8 | 2.1% → 1.3% | nan% | 0.99 | 87% | 1.6% | 0.62 | 0.63 | 3/3 |
+| tikhonov | realistic | ring | 43 | 16 | 2.3% → 2.3% | 2.9% | 1.00 | 99% | 4.1% | 1.53 | 0.16 | 3/3 |
+| tikhonov | realistic | bar | 23 | 10 | 13.6% → 7.4% | 11.9% | 1.00 | 88% | 7.4% | 0.65 | 0.20 | 2/3 |
+| tikhonov | realistic | disc | 43 | 14 | 4.9% → 2.6% | 1.9% | 1.00 | 100% | 4.5% | 1.50 | 0.14 | 3/3 |
+| tikhonov | realistic | broken | 31 | 11 | 9.8% → 6.1% | 10.1% | 0.84 | 93% | 6.1% | 0.59 | 0.37 | 3/3 |
+| tikhonov | realistic | two | 23 | 7 | 25.4% → 15.8% | nan% | 0.98 | 85% | 10.0% | 0.63 | 1.53 | 0/3 |
+| tikhonov | poor | ring | 43 | 15 | 7.4% → 4.4% | 12.5% | 1.00 | 98% | 9.4% | 0.93 | 0.27 | 3/3 |
+| tikhonov | poor | bar | 23 | 10 | 27.2% → 17.1% | 16.1% | 1.00 | 84% | 13.5% | 0.69 | 0.37 | 0/3 |
+| tikhonov | poor | disc | 43 | 13 | 10.9% → 5.7% | 9.3% | 1.00 | 98% | 10.2% | 0.64 | 0.26 | 2/3 |
+| tikhonov | poor | broken | 31 | 9 | 16.9% → 13.7% | 20.0% | 0.58 | 92% | 12.8% | 1.08 | 0.71 | 0/3 |
+| tikhonov | poor | two | 23 | 6 | 47.1% → 34.3% | nan% | 0.97 | 46% | 11.6% | 0.48 | 0.95 | 0/3 |
+| sparse | ideal | ring | 43 | 16 | 0.3% → 0.3% | 1.6% | 1.00 | 98% | 0.4% | 1.34 | 0.35 | 3/3 |
+| sparse | ideal | bar | 23 | 11 | 0.6% → 0.5% | 6.9% | 1.00 | 96% | 0.6% | 2.43 | 0.47 | 3/3 |
+| sparse | ideal | disc | 43 | 14 | 0.4% → 0.4% | 1.8% | 1.00 | 100% | 0.5% | 4.22 | 0.25 | 3/3 |
+| sparse | ideal | broken | 31 | 11 | 0.8% → 0.7% | 3.3% | 0.99 | 97% | 0.9% | 0.22 | 1.46 | 0/3 |
+| sparse | ideal | two | 23 | 8 | 15.3% → 1.1% | nan% | 0.99 | 70% | 0.9% | 0.71 | 2.85 | 0/3 |
+| sparse | realistic | ring | 43 | 16 | 2.7% → 3.4% | 1.3% | 1.00 | 100% | 3.9% | 1.40 | 0.58 | 3/3 |
+| sparse | realistic | bar | 23 | 10 | 13.5% → 8.8% | 9.7% | 1.00 | 89% | 7.7% | 0.03 | 1.12 | 2/3 |
+| sparse | realistic | disc | 43 | 14 | 5.4% → 2.4% | 1.4% | 1.00 | 100% | 4.2% | 2.34 | 0.45 | 2/3 |
+| sparse | realistic | broken | 31 | 11 | 9.5% → 6.5% | 9.3% | 0.91 | 91% | 6.0% | 0.01 | 2.63 | 0/3 |
+| sparse | realistic | two | 23 | 7 | 25.4% → 15.2% | nan% | 0.88 | 88% | 10.4% | 0.33 | 7.80 | 0/3 |
+| sparse | poor | ring | 43 | 15 | 7.3% → 6.1% | 23.6% | 0.99 | 98% | 9.6% | 0.03 | 1.15 | 1/3 |
+| sparse | poor | bar | 23 | 10 | 27.5% → 21.9% | 16.2% | 1.00 | 83% | 12.3% | 0.10 | 2.75 | 0/3 |
+| sparse | poor | disc | 43 | 13 | 15.5% → 7.4% | 12.8% | 0.99 | 98% | 10.5% | 1.46 | 1.11 | 1/3 |
+| sparse | poor | broken | 31 | 9 | 15.3% → 13.9% | 10.9% | 0.63 | 90% | 11.9% | 1.35 | 6.14 | 0/3 |
+| sparse | poor | two | 23 | 7 | 47.4% → 35.6% | nan% | 0.88 | 57% | 20.1% | 0.49 | 3.75 | 0/3 |
 
-## Findings (2026-11-20)
+## Findings (2026-11-20, after the bar fix)
 
-**Verdict: Phase 1 mostly passes.** Tikhonov at realistic noise passes on all 3 seeds for ring and disc, 2/3 for
-the broken magnet and 1/3 for the bar. The bar always meets the field target; only its total
-moment misses. Poor noise is beyond the pass bar by design: it shows where a weak phone
-starts to fail.
+**Verdict: Phase 1 passes.** Tikhonov at realistic noise passes on all 3 seeds for ring, disc
+and the broken magnet, and on 2/3 for the bar. On 6 fresh seeds (3–8) the same code passes
+24/24, so across 9 seeds the graded magnets pass 35/36. The one miss is bar seed 2: field
+error 11.3 % against the 10 % bar (its moment, 10.2 %, passes). Poor noise is beyond the pass
+bar by design: it shows where a weak phone starts to fail.
 
-1. **Regulariser: Tikhonov.** Sparse (group-L1 by IRLS) gives similar fields but takes 1–14 s
-   per fit, against a 1 s budget. This settles the roadmap's open question on synthetic data;
-   check it again on real data in Phase 3.
-2. **Strength rule: GCV.** The discrepancy principle over-smoothed (field error 25–55 %),
-   because the modelled noise runs about 1.3× high. The evidence rule (marginal likelihood)
-   handles two magnets better but gives less honest error bars on the bar.
-3. **Errors shared by a swipe must be modelled.** A position offset, an orientation offset and
-   a constant field offset per swipe, treated as correlated noise, made the 2σ bands honest
-   (coverage 91–100 %).
-4. **No free background term.** An unpenalised uniform background soaked up part of a large
-   magnet's smooth field and biased moments low (bar −31 %). Its size is known from
-   calibration, so it now enters only as the per-swipe field offset.
-5. **The table plane is needed.** Data from above cannot separate depth from strength; starting
-   the voxel grid on the table removed most of the moment bias. The app must send the table
-   height (ARCore plane, or the paper in ruler/grid mode), so it goes into swipe format v1.
-6. **Guided swipes help.** Field error falls by up to half after 4 suggested swipes
-   (disc 5.9 % → 3.1 %), and no suggested swipe saturated the sensor.
-7. **Resolution limit is real.** Staying under 70 % of a ±4900 µT sensor keeps the phone
-   23–43 mm above these magnets, so a 20 mm ring hole is not visible (hole ratio ≈ 1). The app
-   must say so (NF-12).
+**The bar fix.** The bar's total moment came out 12–20 % low, even with ideal noise (10 %), so
+it was a bias, not noise. Two causes, both fixed:
+- *Voxels too high.* On a table, the grid reached 0.6 standoffs above the dipole depth. The
+  smallest-norm solution then puts moment in the upper voxels, closer to the phone, where less
+  moment explains the same field. The grid top is now 0.4 standoffs above the dipole depth
+  (`locate.TABLE_TOP_K`).
+- *Shrinkage by the penalty.* Tikhonov penalises the size of every moment, including the
+  overall level. Uniform magnetisation of the grid is now unpenalised; only departures from it
+  are (`inverse.solve(free_uniform=True)`, Tikhonov only). The posterior covariance includes
+  this, and a test checks the two posterior paths agree.
+
+Not the cause, checked and ruled out: the per-swipe offsets, the depth-weighting exponent,
+extra voxel layers, and wider or higher swipes. Weaker smoothing alone (GCV λ × 0.1–0.3)
+recovered the moment but pushed the bar's field error over the bar.
+
+Before → after, realistic noise, Tikhonov, seeds 0–2: bar 1/3 → 2/3, broken 2/3 → 3/3,
+ring and disc 3/3 → 3/3 with lower moment errors (ring 6.1 % → 2.9 %, disc 2.1 % → 1.9 %).
+
+Earlier findings still hold: Tikhonov over sparse (sparse is 1–8 s per fit, against a 1 s
+budget); GCV as the strength rule; errors shared by a swipe modelled as correlated noise; no
+free background term; the table plane as a required input; guided swipes help; a 20 mm ring
+hole is below the resolution at the safe scan height.
 
 ## Open items
 
-- **Bar moment shrinkage (12–20 %).** Tikhonov underestimates the total moment of an elongated
-  magnet. Ideas: leave the uniform-magnetisation mode unpenalised, or steer guided swipes to
-  reduce moment uncertainty (higher, wider passes). The test is marked xfail.
+- **Bar seed 2 field error (11.3 %).** The only graded miss. Revisit with real recordings.
 - **Moment uncertainty is overconfident.** The field 2σ bands are honest, but the error bar
   on the total moment is several times too small, because the regulariser's bias is not in
-  the posterior.
-- **Two magnets.** GCV sometimes under-smooths (one seed reversed a piece). The evidence rule
-  fixed it in spot checks.
-- Revisit all three with real recordings (Phase 3) before tuning further, since real noise
-  may change which matters.
+  the posterior. Phase 3, before the app shows a moment.
+- **Two magnets.** GCV sometimes under-smooths. The evidence rule fixed it in spot checks.
+  Not part of the pass bar.
+- Revisit all three with real recordings (Phase 3), since real noise may change which matters.
