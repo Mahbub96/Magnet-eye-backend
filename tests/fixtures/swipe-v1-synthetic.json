@@ -7101,6 +7101,8 @@
   "mag_samples": 300,
   "saturated_samples": 0,
   "mean_speed_m_s": 0.09803921568627451,
-  "buffer_overflow": false
+  "buffer_overflow": false,
+  "max_tilt_rad": 0,
+  "motion_detected": true
  }
 }
