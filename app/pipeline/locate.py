@@ -51,7 +51,7 @@ def fit_dipole(obs: Observations, sigma: np.ndarray | None = None) -> DipoleFit:
     k = int(np.argmax(np.linalg.norm(bres, axis=1)))
     top = obs.pos[k]
     # Distance scale from the data itself: spread of the scanned positions.
-    spread = float(np.linalg.norm(obs.pos.std(axis=0)))
+    spread = max(float(np.linalg.norm(obs.pos.std(axis=0))), 1e-3)
     best = None
     for depth in (0.3, 0.6, 1.0, 1.6):
         p0 = top - np.array([0.0, 0.0, depth * spread])

@@ -1,0 +1,16 @@
+# Magnet Eye Caddyfile (Automatic HTTPS and HTTP reverse proxy)
+# Serves on port 80 for IP access, and auto-provisions TLS for {$DOMAIN}.
+
+:80, {$DOMAIN:localhost} {
+    reverse_proxy backend:8001
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+    }
+
+    # Compress responses (gzip / zstd)
+    encode gzip zstd
+}

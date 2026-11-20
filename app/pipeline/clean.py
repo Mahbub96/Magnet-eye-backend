@@ -123,6 +123,13 @@ def trim_idle_tail(s: Swipe, baseline_ut: np.ndarray | None = None) -> Swipe:
     # For ruler mode: adjust arrival at end mark
     if s.tracking_mode == "ruler" and len(s.pos_t) >= 2:
         s.pos_t[-2:] = trim_t_ns
+    elif s.tracking_mode == "arcore":
+        p_mask = s.pos_t <= trim_t_ns
+        if np.any(p_mask):
+            s.pos_t = s.pos_t[p_mask]
+            s.pos = s.pos[p_mask]
+            s.pos_state = s.pos_state[p_mask]
+            s.pos_confidence = s.pos_confidence[p_mask]
 
     return s
 

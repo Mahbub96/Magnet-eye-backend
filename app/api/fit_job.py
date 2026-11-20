@@ -84,6 +84,7 @@ def run_fit(swipes: list[Swipe], state: FitState) -> dict:
     cal = swipes[-1].calibration
     noise = float(np.sqrt(np.mean(cal.noise_ut**2)))
     half = float(np.max(np.abs(obs.pos[:, :2] - obs.pos[:, :2].mean(axis=0))))
+    sug_step = max(sf.bin_len, half / 15.0)
     sug = suggest_next_swipe(
         sol,
         region,
@@ -91,7 +92,7 @@ def run_fit(swipes: list[Swipe], state: FitState) -> dict:
         b_limit_ut=SAFE_FRACTION * cal.range_ut,
         z_low=z_low,
         half_len=half,
-        step=sf.bin_len,
+        step=sug_step,
     )
     moment = sol.total_moment
     m_sigma = np.sqrt(sol.linear_variance(np.tile(np.eye(3), (1, len(sol.moments)))))

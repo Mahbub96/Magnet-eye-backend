@@ -71,14 +71,15 @@ def candidate_lines(
     `spacing`. All values come from the current session (standoff), not fixed numbers.
     """
     lines = []
-    n_off = int(np.floor(half_len / spacing))
+    eff_spacing = max(spacing, half_len / 10.0)
+    n_off = min(int(np.floor(half_len / eff_spacing)), 12)
     for ang in np.deg2rad([0.0, 45.0, 90.0, 135.0]):
         u = np.array([np.cos(ang), np.sin(ang), 0.0])
         nrm = np.array([-u[1], u[0], 0.0])
         for k in range(-n_off, n_off + 1):
             for h in heights:
-                mid = center + k * spacing * nrm
-                mid = np.array([mid[0], mid[1], z_low + h * 2 * spacing])
+                mid = center + k * eff_spacing * nrm
+                mid = np.array([mid[0], mid[1], z_low + h * 2 * eff_spacing])
                 lines.append((mid - half_len * u, mid + half_len * u))
     return lines
 
@@ -110,7 +111,7 @@ def suggest_next_swipe(
         """Expected variance removed by candidate i, or None if it would saturate."""
         if i not in scores:
             a, b = lines[i]
-            n = max(int(np.linalg.norm(b - a) / step), 2)
+            n = min(max(int(np.linalg.norm(b - a) / step), 2), 25)
             pts = a + np.linspace(0, 1, n)[:, None] * (b - a)
             h = dipole_kernel(pts, sol.grid.centers)
             bpred = np.linalg.norm((h @ m).reshape(-1, 3) + sol.background, axis=1)
